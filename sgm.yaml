@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:
+  discovery:
+    image: sgm/service-discovery
+    container_name: service-discovery-container
+    hostname: serviceregistry
+    ports:
+      - 8761:8761
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka
+
+  gateway:
+    image: sgm/api-gateway
+    container_name: gateway-container
+    ports:
+      - 8080:8080
+    depends_on:
+      - discovery
+    hostname: gateway
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka
+      
+   
+  cidadao:
+    image: sgm/cidadao
+    container_name: cidadao-container
+    ports:
+      - 8081:8081
+    depends_on:
+      - discovery
+    hostname: cidadao
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka
+
+  auth:
+    image: sgm/auth
+    container_name: auth-container
+    ports:
+      - 9090:9090
+    depends_on:
+      - discovery
+    hostname: auth
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://serviceregistry:8761/eureka
